@@ -45,10 +45,10 @@ def preprocess_and_encode_image(image_path, output_size=(672, 672)):
 def response(input, _):
     message = input['text']
     image = input['files']
-    # print("This image ", image)
+    print("This image ", image)
 
     if image:
-        image = image[0]['path']
+        image = image[0]
         encoded_image = preprocess_and_encode_image(image)
 
         new_message = {
