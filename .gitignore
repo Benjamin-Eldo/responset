@@ -1,1 +1,5 @@
 dataset-creation/output/*
+
+dataset/*
+*.zip
+*.jpg
