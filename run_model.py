@@ -32,9 +32,7 @@ def query_model(model_name, files):
             css = read_file(file)
 
     prompt_base = read_file('prompt.txt')
-    prompt = (
-        f"{prompt_base.replace('<code>', html+'\n'+css)}\n"
-    )
+    prompt = f"{prompt_base.replace('<code>', html+'\n'+css)}\n"
     response = generate(model_name, prompt)
     print(response['response'])
     return response['response'], html, css
