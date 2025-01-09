@@ -1,4 +1,4 @@
-Here's a webpage code with HTML code and CSS code.
+For each of your answers be short and concise and only answer in english. Here's a webpage code with HTML code and CSS code.
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,10 +101,14 @@ The code element important for the page responsivness are :
             'width: 100%;'
         ]
 -----
-
-You're a web development expert, list down the important code element for responsiveness in the CSS code. Do not detail, just give the code lines.
-
-
----
 <code>
 
+You're a web development expert, list down the important code element for responsiveness in each HTML/CSS code i give you.
+
+Instructions : 
+1. Only give the line
+2. Each code piece must be seperated by a '!'
+3. Do not give any explanation about the code
+4. The answers must be short and concise.
+5. Your answers must be in english
+---
