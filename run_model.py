@@ -15,7 +15,7 @@ def read_file(file):
     with open(file, 'r') as f:
         return f.read()
 
-def query_model(model_name, files, prompt_base):
+def query_model(model_name, files):
     """Query the model after extracting the contents of given files
 
     Args:
@@ -30,50 +30,88 @@ def query_model(model_name, files, prompt_base):
             html = read_file(file)
         elif file.endswith('.css'):
             css = read_file(file)
+
+    prompt_base = read_file('prompt.txt')
     prompt = (
-        f"{prompt_base}\n"
-        f"<HTMLCODE>{str().join(html.split()[:200])}</HTMLCODE>\n"
-        f"<CSSCODE>{str().join(css.split()[:200])}</CSSCODE>"
+        f"{prompt_base.replace('<code>', html+'\n'+css)}\n"
     )
     response = generate(model_name, prompt)
     print(response['response'])
-    return response['response']
+    return response['response'], html, css
 
+def save_progress(dataset, model_name, output_path):
+    # write the dataset to a file
+    output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_intermediate.json'
+    print(f'\n\t-- Writing progress to file {output_file} --\n')
+    with open(os.path.join(output_path, output_file), 'a') as f:
+        json.dump(dataset, f, indent=4)
 
-# 
+def save_dataset(dataset, model_name, output_path):
+    output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_full.json'
+    print(f'\n\t-- Writing complete dataset to file {output_file} --\n')
+    with open(os.path.join(output_path, output_file), 'w') as f:
+        json.dump(dataset, f, indent=4)
+
 def run_model_on_files(dataset_path):
-    """Use CLI args to get model_name and run the model on all files in dataset/code/desktop/html and dataset/code/desktop/css
+    """Use CLI args to get model_name and run the model on all files in dataset/code/desktop/html and dataset/code/desktop/css.
+    CLI Arguments, in order : Model name (MANDATORY), Dataset path, Starting file index, Output path
 
     Args:
         dataset_path (str): Path to the dataset folder, containing html and css folders. Assuming the html and css files have the same name.
     """
-    # llama3.2:1b
     model_name = sys.argv[1]
     if len(sys.argv) > 2 and sys.argv[2]:
         dataset_path = sys.argv[2]
+    
+    path = os.listdir(os.path.join(dataset_path, 'html'))
+    
+    if len(sys.argv) > 3 and sys.argv[3]:
+        # continue from a specific file index
+        path = path[int(sys.argv[3]):]
+        print(f'\t-- Starting from file {path[0].split('.')[0]} --')
 
-    prompt_base = 'What makes this code responsive ? Be concise.'
-    dataset = []
+    output_path=os.getcwd()
 
-    for file in os.listdir(os.path.join(dataset_path, 'html')):
-        # assuming the dataset_path includes 2 folders: html and css
-        # each containing a file with the same name for the same website
-        website_name = file.split('.')[0]
-        html_path = os.path.join(dataset_path, 'html', website_name+'.html')
-        css_path = os.path.join(dataset_path, 'css', website_name+'.css')
-        print(f'\n\t-- Running model on {html_path}, {css_path} --\n')
-        response = query_model(model_name, [html_path, css_path], prompt_base)
-        data = {
-            "id": website_name, 
-            "html": html_path, 
-            "css": css_path, 
-            "response": response
-        }
-        dataset.append(data)
+    if len(sys.argv) > 4 and sys.argv[4]:
+        output_path = sys.argv[4]
+    try:
+        model_name = model_name
+        output_path = output_path
 
-    # write the dataset to a file
-    with open(os.path.join(dataset_path, 'dataset.json'), 'w') as f:
-        json.dump(dataset, f, indent=4)
+        dataset = []
+        intermediate_dataset = []
+        nb_websites = len(path)
+        nb_processed = 0
+        for file in path:
+            # assuming the dataset_path includes 2 folders: html and css
+            # each containing a file with the same name for the same website
+            website_name = file.split('.')[0]
+            html_path = os.path.join(dataset_path, 'html', website_name+'.html')
+            css_path = os.path.join(dataset_path, 'css', website_name+'.css')
+            print(f'\n\t-- Running model on {html_path}, {css_path} --\n')
+            response, html_code, css_code = query_model(model_name, [html_path, css_path])
+            data = {
+                "website_id": website_name, 
+                "html_code": html_code, 
+                "css_code": css_code, 
+                "responsive_explanation": response
+            }
+            dataset.append(data)
+            intermediate_dataset.append(data)
+            nb_processed += 1
+            print(f'\t-- {nb_processed}/{nb_websites} websites processed --')
+
+            if nb_processed % 100 == 0 or nb_processed == nb_websites:
+                # write the progress to a file
+                save_progress(intermediate_dataset, model_name, output_path)
+                intermediate_dataset = []
+
+        # write the dataset to a file
+        save_progress(dataset, model_name, output_path)
+    except KeyboardInterrupt:
+        print("Process interrupted by the user. Saving progress before exiting.")
+        save_progress(intermediate_dataset, model_name, output_path)  # Save progress up to the last processed file
+        print("Progress saved before exiting. ")
 
 if __name__ == '__main__':
     # on peut soit définir le path ici, soit le passer en argument à l'exécution du script en ligne de commande
