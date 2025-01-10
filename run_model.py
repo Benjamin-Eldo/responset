@@ -42,9 +42,14 @@ def save_progress(dataset, model_name, output_path):
     output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_intermediate.json'
     print(f'\n\t-- Writing progress to file {output_file} --\n')
     filename = os.path.join(output_path, output_file)
-    with open(filename, 'r') as f:
-        updated = json.load(f)
-    existing_entries = [d.get('website_id') for d in updated]
+    # if filename exists
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            updated = json.load(f)
+        existing_entries = [d.get('website_id') for d in updated]
+    else:
+        updated = []
+        existing_entries = []
     for data in dataset:
         if data.get('website_id') not in existing_entries:
             # only append if the website_id is not already in the file
@@ -70,7 +75,6 @@ def run_model_on_files(dataset_path):
         dataset_path = sys.argv[2]
     
     path = os.listdir(os.path.join(dataset_path, 'html'))
-    print(path)
     
     if len(sys.argv) > 3 and sys.argv[3]:
         # continue from a specific file index
