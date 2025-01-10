@@ -41,8 +41,16 @@ def save_progress(dataset, model_name, output_path):
     # write the dataset to a file
     output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_intermediate.json'
     print(f'\n\t-- Writing progress to file {output_file} --\n')
-    with open(os.path.join(output_path, output_file), 'a') as f:
-        json.dump(dataset, f, indent=4)
+    filename = os.path.join(output_path, output_file)
+    with open(filename, 'r') as f:
+        updated = json.load(f)
+    existing_entries = [d.get('website_id') for d in updated]
+    for data in dataset:
+        if data.get('website_id') not in existing_entries:
+            # only append if the website_id is not already in the file
+            updated.append(data)
+    with open(filename, 'w') as f:
+        json.dump(updated, f, indent=4)
 
 def save_dataset(dataset, model_name, output_path):
     output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_full.json'
@@ -62,11 +70,13 @@ def run_model_on_files(dataset_path):
         dataset_path = sys.argv[2]
     
     path = os.listdir(os.path.join(dataset_path, 'html'))
+    print(path)
     
     if len(sys.argv) > 3 and sys.argv[3]:
         # continue from a specific file index
         path = path[int(sys.argv[3]):]
-        print(f'\t-- Starting from file {path[0].split('.')[0]} --')
+        start_file_name = path[0].split('.')[0]
+        print(f'\t-- Starting from file {start_file_name} --')
 
     output_path=os.getcwd()
 
@@ -80,6 +90,7 @@ def run_model_on_files(dataset_path):
         intermediate_dataset = []
         nb_websites = len(path)
         nb_processed = 0
+        current_file_index = 0
         for file in path:
             # assuming the dataset_path includes 2 folders: html and css
             # each containing a file with the same name for the same website
@@ -87,7 +98,13 @@ def run_model_on_files(dataset_path):
             html_path = os.path.join(dataset_path, 'html', website_name+'.html')
             css_path = os.path.join(dataset_path, 'css', website_name+'.css')
             print(f'\n\t-- Running model on {html_path}, {css_path} --\n')
-            response, html_code, css_code = query_model(model_name, [html_path, css_path])
+            try:
+                response, html_code, css_code = query_model(model_name, [html_path, css_path])
+            except UnicodeDecodeError:
+                print(f'Error reading file {html_path} or {css_path}. Skipping.')
+                current_file_index += 1
+                continue
+
             data = {
                 "website_id": website_name, 
                 "html_code": html_code, 
@@ -97,9 +114,10 @@ def run_model_on_files(dataset_path):
             dataset.append(data)
             intermediate_dataset.append(data)
             nb_processed += 1
-            print(f'\t-- {nb_processed}/{nb_websites} websites processed --')
+            current_file_index += 1
+            print(f'\t-- {nb_processed}/{nb_websites} websites processed, current file index : {current_file_index} --')
 
-            if nb_processed % 100 == 0 or nb_processed == nb_websites:
+            if nb_processed % 100 == 0 or current_file_index == nb_websites:
                 # write the progress to a file
                 save_progress(intermediate_dataset, model_name, output_path)
                 intermediate_dataset = []
@@ -110,6 +128,8 @@ def run_model_on_files(dataset_path):
         print("Process interrupted by the user. Saving progress before exiting.")
         save_progress(intermediate_dataset, model_name, output_path)  # Save progress up to the last processed file
         print("Progress saved before exiting. ")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
     # on peut soit définir le path ici, soit le passer en argument à l'exécution du script en ligne de commande
