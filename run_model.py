@@ -63,14 +63,18 @@ def save_dataset(dataset, model_name, output_path):
     with open(os.path.join(output_path, output_file), 'w') as f:
         json.dump(dataset, f, indent=4)
 
-def run_model_on_files(dataset_path):
+def run_model_on_files(dataset_path, model_name_to_run = None):
     """Use CLI args to get model_name and run the model on all files in dataset/code/desktop/html and dataset/code/desktop/css.
     CLI Arguments, in order : Model name (MANDATORY), Dataset path, Starting file index, Output path
 
     Args:
         dataset_path (str): Path to the dataset folder, containing html and css folders. Assuming the html and css files have the same name.
     """
-    model_name = sys.argv[1]
+    if model_name_to_run:
+        model_name = model_name_to_run
+    else:
+        model_name = sys.argv[1]
+
     if len(sys.argv) > 2 and sys.argv[2]:
         dataset_path = sys.argv[2]
     
@@ -101,7 +105,7 @@ def run_model_on_files(dataset_path):
             website_name = file.split('.')[0]
             html_path = os.path.join(dataset_path, 'html', website_name+'.html')
             css_path = os.path.join(dataset_path, 'css', website_name+'.css')
-            print(f'-- Running model on {html_path}, {css_path} --')
+            print(f'-- Running model {model_name} on {html_path}, {css_path} --')
             try:
                 response, html_code, css_code = query_model(model_name, [html_path, css_path])
             except UnicodeDecodeError:
