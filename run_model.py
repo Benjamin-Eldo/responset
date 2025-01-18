@@ -32,7 +32,7 @@ def query_model(model_name, files):
             css = read_file(file)
 
     prompt_base = read_file('prompt.txt')
-    prompt = f"{prompt_base.replace('<code>', html+'\n'+css)}"
+    prompt = f"{prompt_base.replace('<code>', html+css)}"
     response = generate(model_name, prompt)
     print(response['response'])
     return response['response'], html, css
@@ -40,7 +40,7 @@ def query_model(model_name, files):
 def save_progress(dataset, model_name, output_path):
     # write the dataset to a file
     output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_intermediate.json'
-    print(f'\n\t-- Writing progress to file {output_file} --\n')
+    print(f'-- Writing progress to file {output_file} --')
     filename = os.path.join(output_path, output_file)
     # if filename exists
     if os.path.exists(filename):
@@ -59,7 +59,7 @@ def save_progress(dataset, model_name, output_path):
 
 def save_dataset(dataset, model_name, output_path):
     output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_full.json'
-    print(f'\n\t-- Writing complete dataset to file {output_file} --\n')
+    print(f'-- Writing complete dataset to file {output_file} --')
     with open(os.path.join(output_path, output_file), 'w') as f:
         json.dump(dataset, f, indent=4)
 
@@ -80,7 +80,7 @@ def run_model_on_files(dataset_path):
         # continue from a specific file index
         path = path[int(sys.argv[3]):]
         start_file_name = path[0].split('.')[0]
-        print(f'\t-- Starting from file {start_file_name} --')
+        print(f'-- Starting from file {start_file_name} --')
 
     output_path=os.getcwd()
 
@@ -101,7 +101,7 @@ def run_model_on_files(dataset_path):
             website_name = file.split('.')[0]
             html_path = os.path.join(dataset_path, 'html', website_name+'.html')
             css_path = os.path.join(dataset_path, 'css', website_name+'.css')
-            print(f'\n\t-- Running model on {html_path}, {css_path} --\n')
+            print(f'-- Running model on {html_path}, {css_path} --')
             try:
                 response, html_code, css_code = query_model(model_name, [html_path, css_path])
             except UnicodeDecodeError:
@@ -119,7 +119,7 @@ def run_model_on_files(dataset_path):
             intermediate_dataset.append(data)
             nb_processed += 1
             current_file_index += 1
-            print(f'\t-- {nb_processed}/{nb_websites} websites processed, current file index : {current_file_index} --')
+            print(f'-- {nb_processed}/{nb_websites} websites processed, current file index : {current_file_index} --')
 
             if nb_processed % 100 == 0 or current_file_index == nb_websites:
                 # write the progress to a file
