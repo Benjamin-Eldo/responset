@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from rouge_score import rouge_scorer
+import json
 
 
 def confront_dataset(code_list_1 : list, code_list_2 : list) -> List[Tuple[str, str, int]]:
@@ -22,5 +23,34 @@ def filter_pairs(tuple_list : List[Tuple[str, str, int]], threshold : float = 0.
     It returns a list of tuples, where each tuple contains two code snippets and the similarity score between them.
     """
     return [(code_1, code_2, score) for code_1, code_2, score in tuple_list if score >= threshold]
+
+
+def get_website_ids(dataset_path : str) -> List[str] : 
+    with open(dataset_path, 'r') as file:
+        dataset = json.load(file)
+        return [element['website_id'] for element in dataset]
+    
+
+def get_first_elements(code_tuple : List[Tuple[str, str, int]]) -> str:
+    return [code_1 for code_1, _, _ in code_tuple]
+
+
+
+
+
+def round(code_list_1 : list, code_list_2 : list, threshold = 0.5) -> List[str]:
+    """
+    This function receives two lists of strings, each one containing a set of code snippets.
+    It returns a list of strings, where each string contains a code snippet from the first list and a code snippet from the second list.
+    """
+    if len(code_list_1) == 0: 
+        return code_list_2
+    
+    if len(code_list_2) == 0:
+        return code_list_1
+
+    tuple_list = confront_dataset(code_list_1, code_list_2)
+    filtered_list = filter_pairs(tuple_list, threshold)
+    return list(dict.fromkeys(get_first_elements(filtered_list)))
 
 
