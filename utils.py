@@ -34,12 +34,14 @@ def parse_qwen_coder(dataset : str, website_id : str) -> list[str]:
             responsive = site.get('responsive_explanation')
 
     print("Before: ", responsive, "\n")
-    responsive_lines = re.findall("(@media.*\s*)| ([\.\#][^!}]*[!};])| !([^!]+)!| \.(.*)!", responsive)
+    responsive_lines = re.findall("(@media.*\s*)| (`*[\.\#][^!}]*[!};])| !([^!]+)!|\`{3}([^\`]*)\`{3}|<([^>]+)>|^!([^!\n]*)", responsive, re.MULTILINE)
     for line in responsive_lines:
         parsed_line = next((x for x in line if x), None)
         
         if parsed_line:
             parsed_line = parsed_line.strip('! `').strip()
+            parsed_line = parsed_line.replace("\n", " ")
             print(f"Responsive_line: {parsed_line}")
             parsed_responsive_line.append(parsed_line)
+
     return parsed_responsive_line
