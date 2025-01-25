@@ -3,3 +3,6 @@ dataset-creation/output/*
 dataset/*
 *.zip
 *.jpg
+__pycache__/
+tournament/__pycache__/
+*.json

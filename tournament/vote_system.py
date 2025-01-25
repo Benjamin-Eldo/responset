@@ -54,3 +54,8 @@ def round(code_list_1 : list, code_list_2 : list, threshold = 0.5) -> List[str]:
     return list(dict.fromkeys(get_first_elements(filtered_list)))
 
 
+def get_element_by_id(dataset, website_id):
+    for element in dataset:
+            if element['website_id'] == website_id: 
+                return element
+    return None
