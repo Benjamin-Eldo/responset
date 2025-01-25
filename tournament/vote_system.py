@@ -22,3 +22,5 @@ def filter_pairs(tuple_list : List[Tuple[str, str, int]], threshold : float = 0.
     It returns a list of tuples, where each tuple contains two code snippets and the similarity score between them.
     """
     return [(code_1, code_2, score) for code_1, code_2, score in tuple_list if score >= threshold]
+
+
