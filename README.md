@@ -35,34 +35,51 @@ pip install -r requirements.txt
 
 ## Running
 
-### Scraping
-Once the libraries are installed , you should scrapped the HTML code using the jupyter notebook files ```webpage_scrapper.ipynb```. 
+The dataset generation follows steps described in this pipeline. 
+
+![Pipeline](/img/Pipeline.png "Pipeline").
+
+Each step must be completed before it passes to the next one. The pipeline contains 4 steps : Webpage scrapping, Cleaning up the webpage code, Querying the LLMs on the webpage code and Comparing responses.
+
+### Scrapping
+Once the libraries are installed, you should scrap the HTML code using the jupyter notebook files ```webpage_scrapper.ipynb```. 
 
 By executing ```get_website_html``` in the loop, this will save the codes in a ```output``` repository.
 
 ### Code cleaning
+To clean the code, you should use the jupyter notebook files ```dataset_code_cleaning.ipynb```.
 
+It will modify the code at the path ```"dataset/code/desktop/html/"``` and save the new one at ```"dataset/code/desktop/html_clean/"```.
+
+Of course you can adapt the path with your own.
 
 ### Execution
-To run the prompt on one models you can do: 
+To run the prompt on one model you can do: 
 
 ```sh
 python run_models.py 'model_name'
 ```
 
-It will used the HTML and CSS codes avaible at the path ```"dataset/code/desktop"``` you can change this path by editing ```run_model.py```
+It will use the HTML and CSS codes available at the path ```"dataset/code/desktop"``` you can change this path by editing ```run_model.py```
 
-You can also run all yours models at once using :
+You can also run all your models at once using:
 
 ```sh
 python run_all_models.py 
 ```
 
-You can edit this files to add the models you want to run.
+You can edit this file to add the models you want to run.
+
+If you want to use your own prompt, you can modify the ```prompt.txt``` files
 
 ### Comparing responses
+Here is how the responses are compared.
+![Tournament](/img/diag_tournament.png "Diag tournament").
 
 
+Finally, to create the dataset by comparing the result of the LLMs you should use the jupyter notebook files ```tournament.ipynb```.
+
+You can run all the files, if you have add your own LLM model don't forget to add the parse code for it in ```response_parsing.py``` and import it in the jupyter notebook. Then modify ```tournament_for_website``` to add your parser as you want.
 
 ## Result
 
