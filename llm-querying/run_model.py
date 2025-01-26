@@ -20,7 +20,7 @@ def query_model(model_name, files):
 
     Args:
         model_name (str): LLM model name (ollama convention)
-        files (list[str]): List of file paths for the HTML and CSS files
+        files (List[str]): List of file paths for the HTML and CSS files
 
     Returns:
         str: Model response
@@ -38,6 +38,13 @@ def query_model(model_name, files):
     return response['response'], html, css
 
 def save_progress(dataset, model_name, output_path):
+    """Saves the dataset to a file, appending to an existing file if it exists
+
+    Args:
+        dataset (List[Dict]): List of Dataset entries
+        model_name (str): Model name
+        output_path (str): Output path
+    """
     # write the dataset to a file
     output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_intermediate.json'
     print(f'-- Writing progress to file {output_file} --')
@@ -56,12 +63,6 @@ def save_progress(dataset, model_name, output_path):
             updated.append(data)
     with open(filename, 'w') as f:
         json.dump(updated, f, indent=4)
-
-def save_dataset(dataset, model_name, output_path):
-    output_file = 'dataset_'+model_name.split(':')[0].replace('.', '-')+'_full.json'
-    print(f'-- Writing complete dataset to file {output_file} --')
-    with open(os.path.join(output_path, output_file), 'w') as f:
-        json.dump(dataset, f, indent=4)
 
 def run_model_on_files(dataset_path, model_name_to_run = None):
     """Use CLI args to get model_name and run the model on all files in dataset/code/desktop/html and dataset/code/desktop/css.
@@ -140,5 +141,5 @@ def run_model_on_files(dataset_path, model_name_to_run = None):
         print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
-    # on peut soit définir le path ici, soit le passer en argument à l'exécution du script en ligne de commande
+    # can either define the path here or pass it as a CLI argument
     run_model_on_files('dataset/code/desktop')

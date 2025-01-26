@@ -71,20 +71,12 @@ def parse_qwen_coder(dataset : str, website_id : str) -> list[str]:
 
     return parsed_responsive_line
 
-def parse_deepseek(dataset_file : str, website_id : str = None) -> List[str]:
+def parse_deepseek(dataset_file : str, website_id : str) -> List[str]:
     with open(dataset_file, 'r') as file:
         dataset = json.load(file)
 
-    if website_id:
-        llm_response = [item for item in dataset if item['website_id'] == website_id][0]['responsive_explanation']
-        return parse_une_reponse_deepseek(llm_response)
-    else:
-        # si besoin de tester en batch
-        responses = []
-        for item in dataset[:20]:
-            res = parse_une_reponse_deepseek(item['responsive_explanation'])
-            responses.append(res)
-        return responses
+    llm_response = [item for item in dataset if item['website_id'] == website_id][0]['responsive_explanation']
+    return parse_une_reponse_deepseek(llm_response)
 
 def parse_une_reponse_deepseek(llm_response:str) -> List[str]:
     tokens_to_remove = ['<｜begin▁of▁sentence｜>', '<｜end▁of▁sentence｜>']
@@ -94,7 +86,7 @@ def parse_une_reponse_deepseek(llm_response:str) -> List[str]:
 
     result = []
 
-    # enlève les commentaires
+    # remove comments
     css_comments = re.compile(r'(\/\*.*\*\/)')
     css_comment_matches = css_comments.findall(llm_response)
     for match in css_comment_matches:
@@ -105,15 +97,15 @@ def parse_une_reponse_deepseek(llm_response:str) -> List[str]:
     for match in html_comment_matches:
         llm_response = llm_response.replace(match, '')
 
-    # capture les meta tags
+    # capture meta tags
     meta_tags = re.compile(r'(<meta.*?>)')
     meta_matches = parse_a_pattern(llm_response, meta_tags, result)
 
-    # capture les media queries
+    # capture media queries
     media_queries = re.compile(r'(@media[^\`{}]*{[^\`]*?})')
     media_matches = parse_a_pattern(llm_response, media_queries, result)
 
-    # capture les blocs de code Markdown
+    # capture Markdown code blocks
     code_blocks = re.compile(r'\`{3}\w*\n([^\`]*)\`{3}')
     code_blocks_matches = code_blocks.findall(llm_response)
     for match in code_blocks_matches:
