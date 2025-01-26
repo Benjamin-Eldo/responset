@@ -42,11 +42,18 @@ The dataset generation follows steps described in this pipeline.
 Each step must be completed before it passes to the next one. The pipeline contains 4 steps : Webpage scrapping, Cleaning up the webpage code, Querying the LLMs on the webpage code and Comparing responses.
 
 ### Scrapping
+```sh
+cd scrapping-cleaning
+```
+
 Once the libraries are installed, you should scrap the HTML code using the jupyter notebook files ```webpage_scrapper.ipynb```. 
 
 By executing ```get_website_html``` in the loop, this will save the codes in a ```output``` repository.
 
 ### Code cleaning
+```sh
+cd scrapping-cleaning
+```
 To clean the code, you should use the jupyter notebook files ```dataset_code_cleaning.ipynb```.
 
 It will modify the code at the path ```"dataset/code/desktop/html/"``` and save the new one at ```"dataset/code/desktop/html_clean/"```.
@@ -54,6 +61,10 @@ It will modify the code at the path ```"dataset/code/desktop/html/"``` and save 
 Of course you can adapt the path with your own.
 
 ### Execution
+```sh
+cd llm-querying
+```
+
 To run the prompt on one model you can do: 
 
 ```sh
@@ -74,8 +85,12 @@ If you want to use your own prompt, you can modify the ```prompt.txt``` files
 
 ### Comparing responses
 Here is how the responses are compared.
+
 ![Tournament](/img/diag_tournament.png "Diag tournament").
 
+```sh
+cd tournament
+```
 
 Finally, to create the dataset by comparing the result of the LLMs you should use the jupyter notebook files ```tournament.ipynb```.
 
