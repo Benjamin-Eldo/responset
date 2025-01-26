@@ -1,6 +1,6 @@
 # Responset 
 
-This project consists of producing a dataset highlighting, in webpage code, what makes it responsive. The dataset is created using webpage code scrapped from the 1000 most popular websites using the [Tranco Ranking](https://tranco-list.eu/list/KJ58W). Then, several LLM are used to extract the code that enables the responsiveness of the website.
+This project consists of producing a dataset highlighting, in webpage code, what makes it responsive. The dataset is created using webpage code scraped from the 1000 most popular websites using the [Tranco Ranking](https://tranco-list.eu/list/KJ58W). Then, several LLM are used to extract the code that enables the responsiveness of the website.
 
 This project was realized in an Theory and Practical Applications of Large Language Models class during second year of Master Degree in Artificial Intelligence at University Lyon 1 Claude Bernard.
 
@@ -39,20 +39,20 @@ The dataset generation follows steps described in this pipeline.
 
 ![Pipeline](/img/Pipeline.png "Pipeline").
 
-Each step must be completed before it passes to the next one. The pipeline contains 4 steps : Webpage scrapping, Cleaning up the webpage code, Querying the LLMs on the webpage code and Comparing responses.
+Each step must be completed before it passes to the next one. The pipeline contains 4 steps : Webpage scraping, Cleaning up the webpage code, Querying the LLMs on the webpage code and Comparing responses.
 
-### Scrapping
+### Scraping
 ```sh
-cd scrapping-cleaning
+cd scraping-cleaning
 ```
 
-Once the libraries are installed, you should scrap the HTML code using the jupyter notebook files ```webpage_scrapper.ipynb```. 
+Once the libraries are installed, you should scrap the HTML code using the jupyter notebook files ```webpage_scraper.ipynb```. 
 
 By executing ```get_website_html``` in the loop, this will save the codes in a ```output``` repository.
 
 ### Code cleaning
 ```sh
-cd scrapping-cleaning
+cd scraping-cleaning
 ```
 To clean the code, you should use the jupyter notebook files ```dataset_code_cleaning.ipynb```.
 
