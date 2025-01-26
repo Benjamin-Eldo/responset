@@ -99,3 +99,5 @@ You can run all the files, if you have add your own LLM model don't forget to ad
 ## Result
 
 The complete dataset is [available for download here](https://drive.google.com/file/d/1ESVi71Ff13zkkqznOiv5W_h7kZ0z4u3f/view?usp=sharing).
+
+[Here](https://github.com/Benjamin-Eldo/responset/blob/main/report.pdf) is the report we made.
