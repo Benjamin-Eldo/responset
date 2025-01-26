@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from rouge_score import rouge_scorer
 import json
+from utils import get_first_elements
 
 
 def confront_dataset(code_list_1 : list, code_list_2 : list) -> List[Tuple[str, str, int]]:
@@ -24,20 +25,6 @@ def filter_pairs(tuple_list : List[Tuple[str, str, int]], threshold : float = 0.
     """
     return [(code_1, code_2, score) for code_1, code_2, score in tuple_list if score >= threshold]
 
-
-def get_website_ids(dataset_path : str) -> List[str] : 
-    with open(dataset_path, 'r') as file:
-        dataset = json.load(file)
-        return [element['website_id'] for element in dataset]
-    
-
-def get_first_elements(code_tuple : List[Tuple[str, str, int]]) -> str:
-    return [code_1 for code_1, _, _ in code_tuple]
-
-
-
-
-
 def round(code_list_1 : list, code_list_2 : list, threshold = 0.5) -> List[str]:
     """
     This function receives two lists of strings, each one containing a set of code snippets.
@@ -52,10 +39,3 @@ def round(code_list_1 : list, code_list_2 : list, threshold = 0.5) -> List[str]:
     tuple_list = confront_dataset(code_list_1, code_list_2)
     filtered_list = filter_pairs(tuple_list, threshold)
     return list(dict.fromkeys(get_first_elements(filtered_list)))
-
-
-def get_element_by_id(dataset, website_id):
-    for element in dataset:
-            if element['website_id'] == website_id: 
-                return element
-    return None

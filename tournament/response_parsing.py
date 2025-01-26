@@ -15,9 +15,6 @@ def parse_stable(dataset_file : str, website_id : str) -> List[str] :
                 code_list = list(dict.fromkeys(code_list))
                 code_list = clear_code(code_list)
                 return code_list
-    
-    # return [code for code in dataset if dataset[code]['is_stable']]
-
 
 def parse_md_format(llm_response : str) -> List[str] : 
     code_list : List[str] = re.findall(r'\`{3}([^\`]*)\`{3}', llm_response)
